@@ -13,6 +13,7 @@ namespace BibliotecaMetrópolis.Controllers
             _logger = logger;
         }
 
+        //Este sera el Dashboard
         public IActionResult Index()
         {
             return View();

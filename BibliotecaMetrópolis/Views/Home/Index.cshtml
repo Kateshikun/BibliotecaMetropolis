@@ -1,8 +1,44 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "DashBoard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <h1 class="display-4 text-center">BIENVENIDO A LA BIBLIOTECA METRÓPOLIS</h1>
+<h3 class="display-8 text-center" style="margin-bottom: 30px">Alajuela, Costa Rica</h3>
+    <div class="row mt-2 justify-content-center">
+    <div class="col-md-5" style="margin-bottom: 30px">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                <h5 class="card-title">📚 Gestion de Adquisiciones</h5>
+                    <p class="card-text">Registra y consulta los recursos disponibles en la librería.</p>
+                    <a class="btn btn-primary" asp-controller="Libros" asp-action="Index">Ver Recursos</a>
+                </div>
+            </div>
+        </div>
+    <div class="col-md-5" style="margin-bottom: 30px">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">🔎 Busqueda entre Campos</h5>
+                <p class="card-text">Busca recursos entre 1-4 campos diferentes.</p>
+                <a class="btn btn-primary" asp-controller="Libros" asp-action="Index">Buscar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5" style="margin-bottom: 30px">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">🤔 Busqueda entre Tipo</h5>
+                <p class="card-text">Busca recursos entre distintos tipos de materiales.</p>
+                <a class="btn btn-primary" asp-controller="Libros" asp-action="Index">Buscar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5" style="margin-bottom: 30px">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">🧑‍💻 Lista de Autores</h5>
+                <p class="card-text">Busca recursos entre distintos tipos de materiales.</p>
+                <a class="btn btn-primary" asp-controller="Libros" asp-action="Index">Ver Autores</a>
+            </div>
+        </div>
+    </div>
+    </div>

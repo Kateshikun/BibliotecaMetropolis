@@ -1,3 +1,11 @@
+/* Integrantes 
+Daniel Adrian Castillo Garcia CG250400
+Rudy Mauricio Gonzales Pineda GP250120
+Francisco
+Anderson 
+Nahum
+ */
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
