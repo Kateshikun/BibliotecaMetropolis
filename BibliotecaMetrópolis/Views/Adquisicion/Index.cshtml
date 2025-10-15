@@ -1,0 +1,54 @@
+﻿@*
+    
+*@
+@{
+	ViewData["Title"] = "Gestion de Adquisiciones";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+	<h2 class="mb-4 text-center">📚 Registro de Adquisiciones</h2>
+
+	<!-- El formulario -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mt-4">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Año</th>
+                    <th>Editorial / Institución</th>
+                    <th>Edición</th>
+                    <th>País</th>
+                    <th>Ciudad</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+               @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Tipo</td>
+                        <td>@item.Titulo</td>
+                        <td>@item.Autor</td>
+                        <td>@item.Anio</td>
+                        <td>@item.Editorial</td>
+                        <td>@item.Edicion</td>
+                        <td>@item.Pais</td>
+                        <td>@item.Ciudad</td>
+                        <td>@item.Cantidad</td>
+                        <td>@item.Precio.ToString("C")</td>
+                        <td class="text-center">
+                            @Html.ActionLink("📝", "Editar", new { id = item.Id }, new { @class = "btn btn-sm btn-warning" })
+                            @Html.ActionLink("🗑️", "Eliminar", new { id = item.Id }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('¿Seguro que deseas eliminar esta adquisición?');" })
+                        </td>
+                    </tr>
+                }
+            </tbody>-->
+        </table>
+    </div>
+
+</div>
