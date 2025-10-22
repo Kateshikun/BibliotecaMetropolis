@@ -43,7 +43,6 @@ GO
 
 
 CREATE TABLE Recurso (
-    -- Se usa IdRecurso para consistencia con los modelos C#
     IdRecurso INT IDENTITY(1,1) PRIMARY KEY, 
     titulo NVARCHAR(200) NOT NULL,
     annopublic INT NULL,
