@@ -1,20 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace BibliotecaMetrópolis.Models;
-
-[Table("TipoRecurso")]
-public partial class TipoRecurso
+namespace BibliotecaMetrópolis.Models
 {
-    [Key]
-    public int IdTipoRecurso { get; set; }
+    [Table("TipoRecurso")]
+    public partial class TipoRecurso
+    {
+        // La clave primaria tiene un nombre diferente a la convención (idTipoR vs IdTipoRecurso),
+        // pero EF Core lo maneja bien si el mapeo en Recurso.cs es correcto.
+        [Key]
+        public int idTipoR { get; set; }
 
-    [StringLength(50)]
-    public string Nombre { get; set; } = null!;
+        [Required]
+        [StringLength(50)]
+        public string nombre { get; set; } = null!;
 
-    [InverseProperty("IdTipoRecursoNavigation")]
-    public virtual ICollection<Recurso> Recursos { get; set; } = new List<Recurso>();
+        [StringLength(255)]
+        public string? descripcion { get; set; }
+
+        // --- Propiedad de Navegación 1:N ---
+
+        // Un TipoRecurso puede clasificar a muchos Recursos.
+        [InverseProperty("IdTipoRNavigation")]
+        public virtual ICollection<Recurso> Recursos { get; set; } = new List<Recurso>();
+    }
 }

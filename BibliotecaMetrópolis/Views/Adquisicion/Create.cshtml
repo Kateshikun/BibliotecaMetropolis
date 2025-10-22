@@ -1,0 +1,133 @@
+﻿@model BibliotecaMetrópolis.ViewModels.RecursoViewModel
+@{
+    ViewData["Title"] = "Crear una Nueva Adquisición";
+}
+
+<h1 class="text-success mt-4 mb-4">Registrar Nuevo Material Bibliográfico</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        @*
+            // Esta etiqueta inicia el formulario y le dice a ASP.NET Core que envíe los datos
+            // a la acción [HttpPost] Create del controlador AdquisicionController.
+        *@
+        <form asp-action="Create">
+            @* Muestra mensajes de error de validación (por ejemplo, si falla la validación del modelo) *@
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* ------------------------------------------------------------------
+               1. CAMPOS BÁSICOS DEL RECURSO (Tabla Recurso)
+               ------------------------------------------------------------------ *@
+
+            <h4>Información del Material</h4>
+
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                @* El Tag Helper asp-for="IdTipoRecurso" toma el valor seleccionado. *@
+                <label asp-for="IdTipoRecurso" class="form-label"></label>
+                @* asp-items: Carga las opciones desde la colección TiposRecurso del ViewModel. *@
+                <select asp-for="IdTipoRecurso" class="form-control" asp-items="Model.TiposRecurso">
+                    <option value="">-- Seleccionar Tipo de Material --</option>
+                </select>
+                <span asp-validation-for="IdTipoRecurso" class="text-danger"></span>
+            </div>
+
+
+            @* --- CAMPO 2: Editorial (AQUÍ APARECERÁ EL ERROR DE VALIDACIÓN) --- *@
+            <div class="mb-3">
+                <label asp-for="IdEditorial" class="form-label"></label>
+                <select asp-for="IdEditorial" class="form-control" asp-items="Model.Editoriales">
+                    <option value="0">-- Seleccionar Editorial/Institución --</option>
+                </select>
+                @* ¡CRÍTICO! Esta etiqueta muestra el error de ModelState *@
+                <span asp-validation-for="IdEditorial" class="text-danger"></span>
+            </div>
+
+            @* --- CAMPO 3: URL de la Institución (NUEVO CAMPO) --- *@
+            <div id="campo-url-institucion" class="mb-3">
+                <label asp-for="UrlInstitusion" class="form-label">URL del Website (Solo para Tesis)</label>
+                <input asp-for="UrlInstitusion" class="form-control" />
+                <span asp-validation-for="UrlInstitusion" class="text-danger"></span>
+            </div>
+
+            @* --- CAMPO 4: Contacto de la Institución (NUEVO CAMPO) --- *@
+            <div id="campo-contacto-institucion" class="mb-3">
+                <label asp-for="ContactoInstitucion" class="form-label">Contacto (Teléfono/Email - Solo para Tesis)</label>
+                <input asp-for="ContactoInstitucion" class="form-control" />
+                <span asp-validation-for="ContactoInstitucion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AnioPublicacion" class="form-label"></label>
+                <input asp-for="AnioPublicacion" class="form-control" />
+                <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
+            </div>
+
+            @* ------------------------------------------------------------------
+               2. RELACIÓN M:N AUTORES (Condición A: Autor Principal)
+               ------------------------------------------------------------------ *@
+
+            <h4 class="mt-5">Relación de Autores</h4>
+
+            <div class="alert alert-info small" role="alert">
+                ¡Recuerda! Debes elegir OBLIGATORIAMENTE un Autor Principal.
+            </div>
+
+            <div class="mb-3">
+                @* Autor Principal: Es un Select simple, obligatorio. *@
+                <label asp-for="IdAutorPrincipal" class="form-label"></label>
+                <select asp-for="IdAutorPrincipal" class="form-control" asp-items="Model.AutoresDisponibles">
+                    <option value="">-- Seleccionar Autor Principal --</option>
+                </select>
+                <span asp-validation-for="IdAutorPrincipal" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                @* Otros Autores: Es un Select con el atributo 'multiple', que permite seleccionar varios IDs. *@
+                <label asp-for="IdsOtrosAutores" class="form-label"></label>
+                <select asp-for="IdsOtrosAutores" class="form-control" asp-items="Model.AutoresDisponibles" multiple>
+                </select>
+                <div class="form-text">Usa CTRL (o Command en Mac) para seleccionar varios autores.</div>
+                <span asp-validation-for="IdsOtrosAutores" class="text-danger"></span>
+            </div>
+
+
+            @* ------------------------------------------------------------------
+               3. PALABRAS CLAVE (Condición D: Facilita la Búsqueda)
+               ------------------------------------------------------------------ *@
+
+            <h4 class="mt-5">Palabras Clave / Etiquetas</h4>
+
+            <div class="mb-3">
+                @* Este campo recoge el texto plano que el controlador POST procesará. *@
+                <label asp-for="PalabrasClaveTexto" class="form-label"></label>
+                <input asp-for="PalabrasClaveTexto" class="form-control" />
+                <div class="form-text">Separa cada palabra clave con una coma (ej: Historia, Arte, Siglo XIX).</div>
+                <span asp-validation-for="PalabrasClaveTexto" class="text-danger"></span>
+            </div>
+
+
+            @* ------------------------------------------------------------------
+               4. BOTONES Y CIERRE
+               ------------------------------------------------------------------ *@
+
+            <div class="mt-4 mb-5">
+                <input type="submit" value="Guardar Adquisición" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Esto asegura que la validación de campos funcione en el navegador (lado del cliente).
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

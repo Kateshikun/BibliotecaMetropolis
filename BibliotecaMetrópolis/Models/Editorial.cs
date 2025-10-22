@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace BibliotecaMetrópolis.Models;
-
-[Table("Editorial")]
-public partial class Editorial
+namespace BibliotecaMetrópolis.Models
 {
-    [Key]
-    public int IdEditorial { get; set; }
+    [Table("Editorial")]
+    public partial class Editorial
+    {
+        [Key]
+        public int IdEdit { get; set; }
 
-    [StringLength(100)]
-    public string Nombre { get; set; } = null!;
+        [Required]
+        [StringLength(100)]
+        public string Nombre { get; set; } = null!;
 
-    public int? IdPais { get; set; }
+        [StringLength(500)]
+        public string? descripcion { get; set; } // El '?' indica que la columna permite nulos
 
-    [StringLength(50)]
-    public string? Ciudad { get; set; }
+        // --- Propiedad de Navegación 1:N ---
 
-    [ForeignKey("IdPais")]
-    [InverseProperty("Editorials")]
-    public virtual Pai? IdPaisNavigation { get; set; }
-
-    [InverseProperty("IdEditorialNavigation")]
-    public virtual ICollection<Recurso> Recursos { get; set; } = new List<Recurso>();
+        // Relación de uno a muchos: Una editorial puede tener muchos Recursos.
+        // Esta colección nos permite, dada una editorial, acceder fácilmente a todos sus recursos.
+        // La propiedad opuesta se define en Recurso como 'IdEditNavigation'.
+        [InverseProperty("IdEditNavigation")]
+        public virtual ICollection<Recurso> Recursos { get; set; } = new List<Recurso>();
+    }
 }

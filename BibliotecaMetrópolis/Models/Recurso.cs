@@ -1,53 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace BibliotecaMetrópolis.Models;
-
-[Table("Recurso")]
-public partial class Recurso
+namespace BibliotecaMetrópolis.Models
 {
-    [Key]
-    public int IdRecurso { get; set; }
+    // Mapea la clase a la tabla "Recurso" en SQL Server
+    [Table("Recurso")]
+    public partial class Recurso
+    {
+        // [Key] indica que esta propiedad es la clave primaria de la tabla
+        [Key]
+        [Column("IdRecurso")]
+        public int IdRecurso { get; set; }
 
-    [StringLength(200)]
-    public string Titulo { get; set; } = null!;
+        [Required] // Indica que la columna no puede ser nula (NOT NULL)
+        [StringLength(200)] // Límite de longitud para la columna en la BDD
+        public string titulo { get; set; } = null!;
 
-    public int IdTipoRecurso { get; set; }
+        public int? annopublic { get; set; } // int? permite valores nulos en la BDD
+        [StringLength(50)]
+        public string? edicion { get; set; }
 
-    public int IdEditorial { get; set; }
+        // Campo extraído directamente del diagrama ER.
+        [StringLength(500)]
+        public string? palabrasbusqueda { get; set; }
 
-    public int? AnioPublicacion { get; set; }
+        [StringLength(1000)]
+        public string? descripcion { get; set; }
 
-    public int? IdPais { get; set; }
+        // --- Claves Foráneas (FKs) ---
+        public int? IdPais { get; set; }
 
-    [StringLength(50)]
-    public string? Ciudad { get; set; }
+        [Column("idTipoR")] // Mapea a 'idTipoR' en la BDD, que tiene minúsculas
+        public int IdTipoR { get; set; }
 
-    public int? Cantidad { get; set; }
+        public int IdEdit { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal? Precio { get; set; }
+        // --- Propiedades de Navegación (Relaciones 1:N) ---
 
-    [ForeignKey("IdEditorial")]
-    [InverseProperty("Recursos")]
-    public virtual Editorial IdEditorialNavigation { get; set; } = null!;
+        // 'virtual' es una convención de EF Core para Lazy Loading (carga perezosa),
+        // aunque en Core se recomienda usar Eager Loading (.Include()).
 
-    [ForeignKey("IdPais")]
-    [InverseProperty("Recursos")]
-    public virtual Pai? IdPaisNavigation { get; set; }
+        // Relación con Editorial
+        [ForeignKey("IdEdit")]
+        [InverseProperty("Recursos")] // Indica la colección inversa en la clase Editorial
+        public virtual Editorial IdEditNavigation { get; set; } = null!;
 
-    [ForeignKey("IdTipoRecurso")]
-    [InverseProperty("Recursos")]
-    public virtual TipoRecurso IdTipoRecursoNavigation { get; set; } = null!;
+        // Relación con País (Puede ser nulo)
+        [ForeignKey("IdPais")]
+        [InverseProperty("Recursos")]
+        public virtual Pais? IdPaisNavigation { get; set; }
 
-    [ForeignKey("IdRecurso")]
-    [InverseProperty("IdRecursos")]
-    public virtual IEnumerable<Autor>? IdAutors { get; set; } = new List<Autor>();
+        // Relación con TipoRecurso
+        [ForeignKey("IdTipoR")]
+        [InverseProperty("Recursos")]
+        public virtual TipoRecurso IdTipoRNavigation { get; set; } = null!;
 
-    [ForeignKey("IdRecurso")]
-    [InverseProperty("IdRecursos")]
-    public virtual IEnumerable<PalabraClave>? IdPalabraClaves { get; set; }
+        // --- Propiedades de Navegación (Relaciones M:N vía Tablas de Unión Explícitas) ---
+
+        // Relación M:N con Autor, a través de la tabla AutoresRecursos.
+        // Esto es necesario para acceder al campo EsPrincipal.
+        [InverseProperty("IdRecursoNavigation")]
+        public virtual ICollection<RecursoAutor> RecursoAutor { get; set; } = new List<RecursoAutor>();
+
+        // Relación M:N con PalabraClave, a través de la tabla RecursoPalabraClave.
+        [InverseProperty("IdRecursoNavigation")]
+        public virtual ICollection<RecursoPalabraClave> RecursoPalabraClave { get; set; } = new List<RecursoPalabraClave>();
+    }
 }

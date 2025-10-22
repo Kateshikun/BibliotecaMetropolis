@@ -6,9 +6,18 @@ Anderson
 Nahum
  */
 
+using Microsoft.EntityFrameworkCore;
+using BibliotecaMetrópolis.Models;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+builder.Services.AddDbContext<BibliotecaMetropolisContext>(options =>
+    options.UseMySql(connectionString, serverVersion));
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

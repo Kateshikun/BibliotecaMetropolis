@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace BibliotecaMetrópolis.Models;
-
-[Table("PalabraClave")]
-public partial class PalabraClave
+namespace BibliotecaMetrópolis.Models
 {
-    [Key]
-    public int IdPalabraClave { get; set; }
+    [Table("PalabraClave")]
+    public partial class PalabraClave
+    {
+        [Key]
+        public int IdPalabraClave { get; set; }
 
-    [StringLength(100)]
-    public string Nombre { get; set; } = null!;
+        [Required]
+        [StringLength(100)]
+        public string Nombre { get; set; } = null!;
 
-    [ForeignKey("IdPalabraClave")]
-    [InverseProperty("IdPalabraClaves")]
-    public virtual ICollection<Recurso> IdRecursos { get; set; } = new List<Recurso>();
+        // --- Propiedad de Navegación M:N ---
+
+        // Esta colección une PalabraClave con Recurso a través de la entidad RecursoPalabraClave.
+        // Es una forma eficiente y relacional de manejar el etiquetado.
+        [InverseProperty("IdPalabraClaveNavigation")]
+        public virtual ICollection<RecursoPalabraClave> RecursoPalabraClaves { get; set; } = new List<RecursoPalabraClave>();
+    }
 }

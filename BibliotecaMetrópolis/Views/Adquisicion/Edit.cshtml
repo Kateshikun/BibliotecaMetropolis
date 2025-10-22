@@ -1,0 +1,86 @@
+﻿@model BibliotecaMetrópolis.ViewModels.RecursoViewModel
+@{
+    ViewData["Title"] = "Editar Adquisición";
+}
+
+<h1 class="text-warning mt-4 mb-4">Editar Material Bibliográfico</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+
+            @* 🚨 ¡CRÍTICO! Este campo OCULTO mantiene el ID del registro que estamos editando. *@
+            <input type="hidden" asp-for="IdRecurso" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h4>Información del Material</h4>
+
+            @* ------------------------------------------------------------------
+               CAMPOS DIRECTOS Y 1:N (Serán precargados por el Edit GET)
+               ------------------------------------------------------------------ *@
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="IdTipoRecurso" class="form-label"></label>
+                @* asp-for="IdTipoRecurso" precargará el valor que vino del controlador *@
+                <select asp-for="IdTipoRecurso" class="form-control" asp-items="Model.TiposRecurso">
+                    <option value="">-- Seleccionar Tipo de Material --</option>
+                </select>
+                <span asp-validation-for="IdTipoRecurso" class="text-danger"></span>
+            </div>
+
+            @* ... (Otros campos como IdEditorial, AnioPublicacion, etc. deben ir aquí) ... *@
+
+            @* ------------------------------------------------------------------
+               RELACIÓN M:N AUTORES
+               ------------------------------------------------------------------ *@
+
+            <h4 class="mt-5">Relación de Autores (Editando)</h4>
+
+            <div class="mb-3">
+                @* Autor Principal: El valor seleccionado será el IdAutorPrincipal cargado desde el controlador. *@
+                <label asp-for="IdAutorPrincipal" class="form-label"></label>
+                <select asp-for="IdAutorPrincipal" class="form-control" asp-items="Model.AutoresDisponibles">
+                    <option value="">-- Seleccionar Autor Principal --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                @* Autores Secundarios: El tag helper automáticamente selecciona los IDs presentes en IdsOtrosAutores. *@
+                <label asp-for="IdsOtrosAutores" class="form-label"></label>
+                <select asp-for="IdsOtrosAutores" class="form-control" asp-items="Model.AutoresDisponibles" multiple>
+                </select>
+                <div class="form-text">Usa CTRL para modificar la selección múltiple.</div>
+            </div>
+
+            @* ------------------------------------------------------------------
+               PALABRAS CLAVE
+               ------------------------------------------------------------------ *@
+
+            <h4 class="mt-5">Palabras Clave / Etiquetas</h4>
+
+            <div class="mb-3">
+                @* Este input ya mostrará el string de palabras clave precargado. *@
+                <label asp-for="PalabrasClaveTexto" class="form-label"></label>
+                <input asp-for="PalabrasClaveTexto" class="form-control" />
+            </div>
+
+            <div class="mt-4 mb-5">
+                <input type="submit" value="Guardar Cambios" class="btn btn-warning" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

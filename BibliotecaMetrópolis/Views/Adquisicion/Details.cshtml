@@ -1,0 +1,78 @@
+﻿@model BibliotecaMetrópolis.Models.Recurso
+@{ 
+    ViewData["Title"] = "Detalle de Adquisición"; 
+}
+
+<h1 class="text-primary mt-4 mb-4">Detalle: @Model.titulo</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        
+        <h4 class="card-title">Información General</h4>
+        <hr />
+        <dl class="row">
+            @* Campos de la tabla Recurso *@
+            <dt class="col-sm-4">Título:</dt>
+            <dd class="col-sm-8">@Model.titulo</dd>
+            
+            <dt class="col-sm-4">Tipo de Material:</dt>
+            <dd class="col-sm-8">@Model.IdTipoRNavigation.nombre</dd>
+            
+            @* Campo 'palabrasbusqueda' que está en la tabla Recurso, según el Diagrama ER *@
+            <dt class="col-sm-4">Palabras Búsqueda (Texto plano):</dt>
+            <dd class="col-sm-8">@Model.palabrasbusqueda</dd>
+            
+            @* ... (Otros campos) *@
+
+        </dl>
+
+        <h4 class="mt-4">Autores y Etiquetas (Relaciones M:N)</h4>
+        <hr />
+        
+        <dl class="row">
+            <dt class="col-sm-4">Lista de Autores:</dt>
+            <dd class="col-sm-8">
+                @if (Model.RecursoAutor.Any())
+                {
+                    <ul class="list-unstyled">
+                        @* Ordenamos para que el autor principal aparezca primero. *@
+                        @foreach (var recursoAutor in Model.RecursoAutor.OrderByDescending(ra => ra.EsPrincipal))
+                        {
+                            var autor = recursoAutor.IdAutorNavigation;
+                            
+                            // Lógica de la Condición A: Usamos el campo 'EsPrincipal' de la tabla de unión.
+                            <li class="@(recursoAutor.EsPrincipal ? "fw-bold text-success" : "")">
+                                @autor.nombres @autor.apellidos 
+                                @(recursoAutor.EsPrincipal ? " (AUTOR PRINCIPAL)" : "")
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No hay autores asociados a este material.</p>
+                }
+            </dd>
+
+            <dt class="col-sm-4">Palabras Clave (Etiquetas):</dt>
+            <dd class="col-sm-8">
+                @if (Model.RecursoPalabraClave.Any())
+                {
+                    @foreach (var rpc in Model.RecursoPalabraClave)
+                    {
+                        // Iteramos sobre la colección de unión y accedemos al nombre de la entidad PalabraClave.
+                        <span class="badge bg-secondary me-2">@rpc.IdPalabraClaveNavigation.Nombre</span>
+                    }
+                }
+                else
+                {
+                    <p>Sin etiquetas de búsqueda definidas.</p>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.IdRecurso" class="btn btn-warning">Editar</a> |
+    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+</div>

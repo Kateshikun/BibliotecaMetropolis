@@ -1,0 +1,60 @@
+﻿@model BibliotecaMetrópolis.Models.Recurso
+@{
+    ViewData["Title"] = "Eliminar Adquisición";
+    var autorPrincipal = Model.RecursoAutor.FirstOrDefault(ra => ra.EsPrincipal)?.IdAutorNavigation;
+    var otrosAutores = Model.RecursoAutor.Where(ra => !ra.EsPrincipal).Select(ra => ra.IdAutorNavigation.nombres + " " + ra.IdAutorNavigation.apellidos);
+    var palabrasClave = Model.RecursoPalabraClave.Select(rpc => rpc.IdPalabraClaveNavigation.Nombre);
+}
+
+<h1 class="text-danger mt-4">Eliminar Material Bibliográfico</h1>
+
+<h3 class="mt-4">¿Está seguro de que desea eliminar este recurso?</h3>
+<h2 class="text-danger">@Html.DisplayFor(model => model.titulo)</h2>
+
+@* Muestra mensajes de error si hay problemas de restricción en la base de datos *@
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div>
+    <hr />
+    <dl class="row">
+
+        @* ----------------------------------
+           INFORMACIÓN PRINCIPAL
+        ----------------------------------- *@
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IdRecurso)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.IdRecurso)</dd>
+
+        <dt class="col-sm-3">Tipo de Material</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.IdTipoRNavigation.nombre)</dd>
+
+        <dt class="col-sm-3">Editorial</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.IdEditNavigation.Nombre)</dd>
+
+        <dt class="col-sm-3">Año de Publicación</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.annopublic)</dd>
+
+        @* ----------------------------------
+           RELACIONES M:N (AUTORES)
+        ----------------------------------- *@
+        <dt class="col-sm-3">Autor Principal</dt>
+        <dd class="col-sm-9">@(autorPrincipal != null ? $"{autorPrincipal.nombres} {autorPrincipal.apellidos}" : "N/A")</dd>
+
+        <dt class="col-sm-3">Otros Autores</dt>
+        <dd class="col-sm-9">@(otrosAutores.Any() ? string.Join(", ", otrosAutores) : "Ninguno")</dd>
+
+
+        @* ----------------------------------
+           RELACIONES M:N (PALABRAS CLAVE)
+        ----------------------------------- *@
+        <dt class="col-sm-3">Palabras Clave</dt>
+        <dd class="col-sm-9">@(palabrasClave.Any() ? string.Join(", ", palabrasClave) : "Ninguna")</dd>
+
+    </dl>
+
+    <form asp-action="Delete" class="mt-4">
+        @* Es fundamental enviar el ID en un campo oculto para que la acción POST sepa qué borrar *@
+        <input type="hidden" asp-for="IdRecurso" />
+        <input type="submit" value="Confirmar Eliminación" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
