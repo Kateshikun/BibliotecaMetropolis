@@ -18,11 +18,10 @@
             <dt class="col-sm-4">Tipo de Material:</dt>
             <dd class="col-sm-8">@Model.IdTipoRNavigation.nombre</dd>
             
-            @* Campo 'palabrasbusqueda' que está en la tabla Recurso, según el Diagrama ER *@
+            @* Campo 'palabrasbusqueda' que está en la tabla Recurso*@
             <dt class="col-sm-4">Palabras Búsqueda (Texto plano):</dt>
             <dd class="col-sm-8">@Model.palabrasbusqueda</dd>
             
-            @* ... (Otros campos) *@
 
         </dl>
 
@@ -40,7 +39,6 @@
                         {
                             var autor = recursoAutor.IdAutorNavigation;
                             
-                            // Lógica de la Condición A: Usamos el campo 'EsPrincipal' de la tabla de unión.
                             <li class="@(recursoAutor.EsPrincipal ? "fw-bold text-success" : "")">
                                 @autor.nombres @autor.apellidos 
                                 @(recursoAutor.EsPrincipal ? " (AUTOR PRINCIPAL)" : "")

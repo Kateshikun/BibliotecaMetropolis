@@ -10,16 +10,14 @@
     <div class="col-md-8">
         <form asp-action="Edit">
 
-            @* 🚨 ¡CRÍTICO! Este campo OCULTO mantiene el ID del registro que estamos editando. *@
+            @* Este campo OCULTO mantiene el ID del registro que estamos editando*@
             <input type="hidden" asp-for="IdRecurso" />
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <h4>Información del Material</h4>
 
-            @* ------------------------------------------------------------------
-               CAMPOS DIRECTOS Y 1:N (Serán precargados por el Edit GET)
-               ------------------------------------------------------------------ *@
+            @*  CAMPOS DIRECTOS Y 1:N *@
             <div class="mb-3">
                 <label asp-for="Titulo" class="form-label"></label>
                 <input asp-for="Titulo" class="form-control" />
@@ -35,11 +33,6 @@
                 <span asp-validation-for="IdTipoRecurso" class="text-danger"></span>
             </div>
 
-            @* ... (Otros campos como IdEditorial, AnioPublicacion, etc. deben ir aquí) ... *@
-
-            @* ------------------------------------------------------------------
-               RELACIÓN M:N AUTORES
-               ------------------------------------------------------------------ *@
 
             <h4 class="mt-5">Relación de Autores (Editando)</h4>
 
@@ -59,9 +52,7 @@
                 <div class="form-text">Usa CTRL para modificar la selección múltiple.</div>
             </div>
 
-            @* ------------------------------------------------------------------
-               PALABRAS CLAVE
-               ------------------------------------------------------------------ *@
+            @* PALABRAS CLAVE*@
 
             <h4 class="mt-5">Palabras Clave / Etiquetas</h4>
 

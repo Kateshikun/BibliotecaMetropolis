@@ -36,16 +36,15 @@ namespace BibliotecaMetrópolis.Models
             // Aunque se usan atributos [PrimaryKey] en las clases, es buena práctica
             // confirmarlas aquí para asegurar que EF Core las mapee correctamente.
 
-            // 1. Clave compuesta para AutoresRecursos (IdRec, IdAutor)
             // Esto le dice a EF que la combinación de estos dos campos es única y es la PK.
             modelBuilder.Entity<RecursoAutor>()
                 .HasKey(ar => new { ar.IdRecurso, ar.IdAutor });
 
-            // 2. Clave compuesta para RecursoPalabraClave (IdRecurso, IdPalabraClave)
+            // Clave compuesta para RecursoPalabraClave (IdRecurso, IdPalabraClave)
             modelBuilder.Entity<RecursoPalabraClave>()
         .HasKey(rpc => new { rpc.IdRecurso, rpc.IdPalabraClave });
 
-            // Llama a la implementación base para que EF Core finalice el mapeo de todas las FKs restantes.
+            // Llama a la implementación base para que EF Core finalice el mapeo de todas las FKs restantes
             base.OnModelCreating(modelBuilder);
         }
     }

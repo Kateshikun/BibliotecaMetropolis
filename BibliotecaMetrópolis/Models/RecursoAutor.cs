@@ -9,15 +9,15 @@ namespace BibliotecaMetrópolis.Models
     [Table("RecursoAutor")]
     public partial class RecursoAutor
     {
-        [Column("IdRecurso")] // Mapea a la columna IdRec en la tabla Recurso
+        [Column("IdRecurso")] 
         public int IdRecurso { get; set; }
 
         public int IdAutor { get; set; }
 
-        // Campo CLAVE: Este campo es la razón por la que necesitamos una clase de unión explícita.
+        //Este campo es la razón por la que necesitamos una clase de unión explícita >:(
         public bool EsPrincipal { get; set; }
 
-        // --- Propiedades de Navegación (para unir las dos entidades) ---
+        // Propiedades de Navegación (para unir las dos entidades)
 
         [ForeignKey("IdRecurso")]
         public virtual Recurso IdRecursoNavigation { get; set; } = null!;

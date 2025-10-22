@@ -16,9 +16,9 @@
             @* Muestra mensajes de error de validación (por ejemplo, si falla la validación del modelo) *@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @* ------------------------------------------------------------------
-               1. CAMPOS BÁSICOS DEL RECURSO (Tabla Recurso)
-               ------------------------------------------------------------------ *@
+            @* 
+               CAMPOS BÁSICOS DEL RECURSO (Tabla Recurso)
+*@
 
             <h4>Información del Material</h4>
 
@@ -39,24 +39,24 @@
             </div>
 
 
-            @* --- CAMPO 2: Editorial (AQUÍ APARECERÁ EL ERROR DE VALIDACIÓN) --- *@
+            @*  Editorial *@
             <div class="mb-3">
                 <label asp-for="IdEditorial" class="form-label"></label>
                 <select asp-for="IdEditorial" class="form-control" asp-items="Model.Editoriales">
                     <option value="0">-- Seleccionar Editorial/Institución --</option>
                 </select>
-                @* ¡CRÍTICO! Esta etiqueta muestra el error de ModelState *@
+                @* Esta etiqueta muestra el error de ModelState *@
                 <span asp-validation-for="IdEditorial" class="text-danger"></span>
             </div>
 
-            @* --- CAMPO 3: URL de la Institución (NUEVO CAMPO) --- *@
+            @*  URL de la Institución*@
             <div id="campo-url-institucion" class="mb-3">
                 <label asp-for="UrlInstitusion" class="form-label">URL del Website (Solo para Tesis)</label>
                 <input asp-for="UrlInstitusion" class="form-control" />
                 <span asp-validation-for="UrlInstitusion" class="text-danger"></span>
             </div>
 
-            @* --- CAMPO 4: Contacto de la Institución (NUEVO CAMPO) --- *@
+            @*  Contacto de la Institución*@
             <div id="campo-contacto-institucion" class="mb-3">
                 <label asp-for="ContactoInstitucion" class="form-label">Contacto (Teléfono/Email - Solo para Tesis)</label>
                 <input asp-for="ContactoInstitucion" class="form-control" />
@@ -69,9 +69,9 @@
                 <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
             </div>
 
-            @* ------------------------------------------------------------------
-               2. RELACIÓN M:N AUTORES (Condición A: Autor Principal)
-               ------------------------------------------------------------------ *@
+            @* 
+               RELACIÓN M:N AUTORES
+*@
 
             <h4 class="mt-5">Relación de Autores</h4>
 
@@ -98,9 +98,7 @@
             </div>
 
 
-            @* ------------------------------------------------------------------
-               3. PALABRAS CLAVE (Condición D: Facilita la Búsqueda)
-               ------------------------------------------------------------------ *@
+            @* PALABRAS CLAVE *@
 
             <h4 class="mt-5">Palabras Clave / Etiquetas</h4>
 
@@ -112,10 +110,6 @@
                 <span asp-validation-for="PalabrasClaveTexto" class="text-danger"></span>
             </div>
 
-
-            @* ------------------------------------------------------------------
-               4. BOTONES Y CIERRE
-               ------------------------------------------------------------------ *@
 
             <div class="mt-4 mb-5">
                 <input type="submit" value="Guardar Adquisición" class="btn btn-success" />

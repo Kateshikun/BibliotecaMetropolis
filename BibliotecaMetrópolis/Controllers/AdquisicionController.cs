@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectListItem (Drop
 
 namespace BibliotecaMetrópolis.Controllers
 {
-    // Ojo: El nombre del controlador es AdquisicionController (singular)
     public class AdquisicionController : Controller
     {
         // Esta variable privada guarda la conexión a la BDD (el Contexto).
@@ -18,9 +17,7 @@ namespace BibliotecaMetrópolis.Controllers
             _context = context;
         }
 
-        // ---------------------------------------------------------------------------------------
         // FUNCIÓN AUXILIAR: Cargar datos para Dropdowns
-        // ---------------------------------------------------------------------------------------
         // Esta función ayuda a llenar los dropdowns de las vistas Create y Edit.
         private RecursoViewModel CargarDatosApoyo(RecursoViewModel viewModel)
         {
@@ -34,7 +31,7 @@ namespace BibliotecaMetrópolis.Controllers
             viewModel.AutoresDisponibles = new SelectList(_context.Autor
                 .Select(a => new {
                     a.IdAutor,
-                    NombreCompleto = a.nombres + " " + a.apellidos // Concatenamos Nombres y Apellidos
+                    NombreCompleto = a.nombres + " " + a.apellidos
                 })
                 .OrderBy(a => a.NombreCompleto),
                 "IdAutor",
@@ -68,22 +65,18 @@ namespace BibliotecaMetrópolis.Controllers
             if (id == null) return NotFound(); // Si no hay ID, devolvemos un error 404 (No Encontrado)
 
             // Esto es un parche avanzado para un error de ambigüedad (CS0121). 
-            // Si funciona solo con .Include(), es mejor borrar esta línea larga.
             var recurso = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
-                // Incluimos entidades básicas (1:N)
                 .Include(_context.Recurso, r => r.IdEditNavigation)
                 .Include(r => r.IdTipoRNavigation)
                 .Include(r => r.IdPaisNavigation)
 
                 // 1. Carga de Autores (M:N)
-                // Ojo: Usamos el nombre de la colección que definimos en el modelo (RecursoAutor).
                 .Include(r => r.RecursoAutor)
                     // ThenInclude nos lleva de la tabla de unión (RecursoAutor) al objeto Autor.
                     .ThenInclude(ra => ra.IdAutorNavigation)
 
                 // 2. Carga de Palabras Clave (M:N)
                 .Include(r => r.RecursoPalabraClave)
-                    // ¡CORRECCIÓN! Debe ser la propiedad de navegación (el objeto PalabraClave), no solo el ID.
                     .ThenInclude(rpc => rpc.IdPalabraClaveNavigation)
 
                // Buscamos el registro por su clave primaria (IdRecurso)
@@ -107,7 +100,7 @@ namespace BibliotecaMetrópolis.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken] // Buena práctica de seguridad.
+        [ValidateAntiForgeryToken] // Buena práctica de seguridad. Sirve para evitar ataques CSRF, osea peticiones maliciosas.
         public async Task<IActionResult> Create(RecursoViewModel viewModel)
         {
             // 1. Validamos que los campos obligatorios del formulario se hayan llenado.
@@ -117,7 +110,7 @@ namespace BibliotecaMetrópolis.Controllers
                 return View(CargarDatosApoyo(viewModel));
             }
 
-            if (viewModel.IdTipoRecurso == 3 && viewModel.IdEditorial != 0)
+            if (viewModel.IdTipoRecurso == 3 && viewModel.IdEditorial != 0) //Por si la persona elige TESIS y una editorial (Cosa que no se puede hacer)
             {
                     ModelState.AddModelError("IdEditorial",
                     $"No esta permitido asociar la tesis con editorial. Para tesis solo se registra información de la Institución educativa.");
@@ -127,7 +120,6 @@ namespace BibliotecaMetrópolis.Controllers
                 {
                 }
 
-                // 2.1. Buscamos o Creamos la 'Editorial' (Institución)
 
                 // El nombre de la editorial ahora es el nombre de la Institución
                 var nombreInstitucion = _context.Editorial
@@ -136,10 +128,10 @@ namespace BibliotecaMetrópolis.Controllers
                                                 .FirstOrDefault() ?? "Seleccionada";
                 
 
-                // 2.2. Definimos la descripción con la información de contacto y URL.
+                // Definimos la descripción con la información de contacto y URL.
                 var descripcionInstitucion = $"URL: {viewModel.UrlInstitusion ?? "N/A"} | Contacto: {viewModel.ContactoInstitucion ?? "N/A"}";
 
-                // 2.3. Buscamos si ya existe una editorial con esa URL (una búsqueda simple).
+                // Buscamos si ya existe una editorial con esa URL (una búsqueda simple).
                 var institucionExistente = await _context.Editorial
                     .FirstOrDefaultAsync(e => e.descripcion != null && e.descripcion.Contains(viewModel.UrlInstitusion!));
 
@@ -150,7 +142,7 @@ namespace BibliotecaMetrópolis.Controllers
                 }
                 else
                 {
-                    // Crear nueva Editorial (Institución)
+                    // Crear nueva Editorial (Institución) si no existe.
                     var nuevaInstitucion = new Editorial
                     {
                         Nombre = nombreInstitucion ?? "Institución Desconocida", // Usar el nombre que ya eligió en el dropdown, si existe.
@@ -162,23 +154,20 @@ namespace BibliotecaMetrópolis.Controllers
                     viewModel.IdEditorial = nuevaInstitucion.IdEdit;
                 }
             }
-            // --- 2. Inserción del Recurso Principal ---
             var nuevoRecurso = new Recurso
             {
                 titulo = viewModel.Titulo,
                 IdTipoR = viewModel.IdTipoRecurso,
                 IdEdit = viewModel.IdEditorial,
                 annopublic = viewModel.AnioPublicacion,
-                palabrasbusqueda = viewModel.PalabrasClaveTexto, // Condición D (campo plano)
-
-                // Inicializamos las colecciones M:N.
+                palabrasbusqueda = viewModel.PalabrasClaveTexto,
                 RecursoAutor = new List<RecursoAutor>(),
                 RecursoPalabraClave = new List<RecursoPalabraClave>()
             };
 
-            _context.Recurso.Add(nuevoRecurso); // Usamos la variable de contexto corregida: _context
+            _context.Recurso.Add(nuevoRecurso); //Lo agregamos al contexto, pero aún no se guarda en la BDD.
 
-            // Guardamos AHORA para obtener el ID de IDENTITY de la BDD. ¡Es vital!
+            // Guardamos para obtener el ID de IDENTITY de la BDD
             try
             {
                 await _context.SaveChangesAsync();
@@ -191,7 +180,7 @@ namespace BibliotecaMetrópolis.Controllers
 
             var nuevoRecursoId = nuevoRecurso.IdRecurso;
 
-            // --- 3. Procesar Autores (Condición A: EsPrincipal) ---
+            // Procesar Autores
             var idsAutores = new List<int> { viewModel.IdAutorPrincipal };
             if (viewModel.IdsOtrosAutores != null)
             {
@@ -203,7 +192,7 @@ namespace BibliotecaMetrópolis.Controllers
             {
                 var esPrincipal = autorId == viewModel.IdAutorPrincipal;
 
-                // Creamos la relación de unión y definimos si es principal (Condición A).
+                // Creamos la relación de unión y definimos si es principal.
                 nuevoRecurso.RecursoAutor.Add(new RecursoAutor
                 {
                     IdRecurso = nuevoRecursoId,
@@ -212,7 +201,7 @@ namespace BibliotecaMetrópolis.Controllers
                 });
             }
 
-            // --- 4. Procesar Palabras Clave (Condición D) ---
+            //Procesar Palabras Clave. Se separan por comas o punto y coma.
             var palabrasTexto = viewModel.PalabrasClaveTexto?
                                         .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                                         .Select(p => p.Trim())
@@ -242,10 +231,10 @@ namespace BibliotecaMetrópolis.Controllers
 
             try
             {
-                // 5. Segundo guardado: Guarda todas las relaciones M:N y las nuevas Palabras Clave.
+                // egundo guardado: Guarda todas las relaciones M:N y las nuevas Palabras Clave.
                 await _context.SaveChangesAsync();
 
-                // Éxito: Volvemos al listado principal.
+                // Si todo esta bien: Volvemos al listado principal.
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -259,8 +248,8 @@ namespace BibliotecaMetrópolis.Controllers
         {
             if (id == null) return NotFound();
 
-            // 1. CARGAR EL RECURSO Y TODAS SUS RELACIONES
-            // Necesitamos cargar Autores y Palabras Clave para preseleccionar los dropdowns.
+            // CARGAR EL RECURSO Y TODAS SUS RELACIONES
+            // Cargar Autores y Palabras Clave para preseleccionar los dropdowns.
             var recurso = await _context.Recurso
                 // Incluimos las relaciones 1:N básicas
                 .Include(r => r.IdEditNavigation)
@@ -278,9 +267,8 @@ namespace BibliotecaMetrópolis.Controllers
 
             if (recurso == null) return NotFound();
 
-            // 2. MAPEO DE ENTIDAD (Recurso) A VIEWMODEL (RecursoViewModel)
 
-            // 2.1. Extraer Autores: Determinamos cuál es el Principal y cuáles son Secundarios.
+            // Extraer Autores: Determinamos cuál es el Principal y cuáles son Secundarios.
             var autorPrincipal = recurso.RecursoAutor.FirstOrDefault(ra => ra.EsPrincipal);
 
             var otrosAutoresIds = recurso.RecursoAutor
@@ -289,15 +277,15 @@ namespace BibliotecaMetrópolis.Controllers
                 .Select(ra => ra.IdAutor)
                 .ToList();
 
-            // 2.2. Extraer Palabras Clave: Concatenamos los nombres en un solo string.
+            // Aqui se extraen las palabras Clave: Concatenamos los nombres en un solo string.
             var palabrasClaveTexto = string.Join(", ",
                 recurso.RecursoPalabraClave.Select(rpc => rpc.IdPalabraClaveNavigation.Nombre)
             );
 
-            // 2.3. Mapear al ViewModel
+            // Mapear al ViewModel
             var viewModel = new RecursoViewModel
             {
-                // ¡CRÍTICO! Necesitamos el ID del Recurso para que el POST sepa qué actualizar.
+                // Necesitamos el ID del Recurso para que el POST sepa qué actualizar.
                 IdRecurso = recurso.IdRecurso,
 
                 // Campos Directos
@@ -307,12 +295,12 @@ namespace BibliotecaMetrópolis.Controllers
                 AnioPublicacion = recurso.annopublic,
 
                 // Relaciones M:N
-                IdAutorPrincipal = autorPrincipal?.IdAutor ?? 0, // Condición A
+                IdAutorPrincipal = autorPrincipal?.IdAutor ?? 0, 
                 IdsOtrosAutores = otrosAutoresIds,
                 PalabrasClaveTexto = palabrasClaveTexto
             };
 
-            // 3. CARGAR LISTAS DE APOYO (Dropdowns)
+            // CARGAR LISTAS DE APOYO (Dropdowns)
             viewModel = CargarDatosApoyo(viewModel);
 
             // Devolvemos el ViewModel precargado a la vista Edit.cshtml.
@@ -323,13 +311,13 @@ namespace BibliotecaMetrópolis.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(RecursoViewModel viewModel)
         {
-            // 1. Validamos que el modelo esté correcto.
+            // Validamos que el modelo esté correcto.
             if (!ModelState.IsValid)
             {
                 return View(CargarDatosApoyo(viewModel));
             }
 
-            // 2. BUSCAR EL REGISTRO ORIGINAL CON TODAS SUS COLECCIONES
+            // Se BUSCA EL REGISTRO ORIGINAL CON TODAS SUS COLECCIONES
             var recursoOriginal = await _context.Recurso
                 .Include(r => r.RecursoAutor)
                 .Include(r => r.RecursoPalabraClave)
@@ -340,19 +328,17 @@ namespace BibliotecaMetrópolis.Controllers
                 return NotFound();
             }
 
-            // --- 3. ACTUALIZAR CAMPOS DIRECTOS (Tabla Recurso) ---
+            // ACTUALIZAR CAMPOS DIRECTOS (Tabla Recurso)
             recursoOriginal.titulo = viewModel.Titulo;
             recursoOriginal.IdTipoR = viewModel.IdTipoRecurso;
             recursoOriginal.IdEdit = viewModel.IdEditorial;
             recursoOriginal.annopublic = viewModel.AnioPublicacion;
             recursoOriginal.palabrasbusqueda = viewModel.PalabrasClaveTexto; // Campo plano
 
-            // --- 4. SINCRONIZAR AUTORES (M:N) ---
-
-            // 4.1. BORRAR: Eliminamos TODAS las relaciones RecursoAutor actuales.
+            // BORRAR: Eliminamos TODAS las relaciones RecursoAutor actuales.
             _context.AutoresRecursos.RemoveRange(recursoOriginal.RecursoAutor);
 
-            // 4.2. RE-CREAR: Reutilizamos la lógica del Create.
+            // RE-CREAR: Reutilizamos la lógica del Create.
             var idsAutores = new List<int> { viewModel.IdAutorPrincipal };
             if (viewModel.IdsOtrosAutores != null)
             {
@@ -363,7 +349,7 @@ namespace BibliotecaMetrópolis.Controllers
             {
                 var esPrincipal = autorId == viewModel.IdAutorPrincipal;
 
-                // Creamos la nueva relación con el valor de EsPrincipal (Condición A).
+                // Creamos la nueva relación con el valor de EsPrincipal.
                 recursoOriginal.RecursoAutor.Add(new RecursoAutor
                 {
                     IdRecurso = recursoOriginal.IdRecurso,
@@ -372,12 +358,10 @@ namespace BibliotecaMetrópolis.Controllers
                 });
             }
 
-            // --- 5. SINCRONIZAR PALABRAS CLAVE (M:N) ---
-
-            // 5.1. BORRAR: Eliminamos TODAS las relaciones RecursoPalabraClave actuales.
+            // Eliminamos TODAS las relaciones RecursoPalabraClave actuales.
             recursoOriginal.RecursoPalabraClave.Clear();
 
-            // 5.2. RE-CREAR: Procesamos el nuevo texto de palabras clave.
+            // Procesamos el nuevo texto de palabras clave.
             var palabrasTexto = viewModel.PalabrasClaveTexto?
                                         .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                                         .Select(p => p.Trim())
@@ -406,7 +390,7 @@ namespace BibliotecaMetrópolis.Controllers
 
             try
             {
-                // 6. GUARDAR TODO: Actualización del Recurso, eliminación y re-inserción de las relaciones.
+                //GUARDAR TODO: Actualización del Recurso, eliminación y re-inserción de las relaciones.
                 await _context.SaveChangesAsync();
 
                 // Redirigir a los detalles para ver la edición aplicada.
@@ -440,9 +424,6 @@ namespace BibliotecaMetrópolis.Controllers
 
             if (recurso == null) return NotFound();
 
-            // Opcional: Para la vista, puedes crear un ViewModel simple con solo los datos necesarios, 
-            // pero en este caso, podemos pasar la entidad 'Recurso' directamente ya que tiene las colecciones cargadas.
-
             return View(recurso);
         }
 
@@ -450,28 +431,23 @@ namespace BibliotecaMetrópolis.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // 1. Buscamos el recurso por ID. 
-            // Nota: ¡No necesitamos cargarlo con includes!
+            // Buscamos el recurso por ID. 
             var recurso = await _context.Recurso.FindAsync(id);
 
             if (recurso != null)
             {
-                // 2. Le decimos al DbContext que elimine el registro.
-                // EF Core, si configuraste las eliminaciones en cascada (Cascade Delete) en el Context,
-                // se encargará automáticamente de borrar los registros relacionados en las tablas de unión 
-                // (RecursoAutor y RecursoPalabraClave).
+                // Le decimos al DbContext que elimine el registro.
                 _context.Recurso.Remove(recurso);
             }
 
             try
             {
-                // 3. Guardamos los cambios.
+                // Guardamos los cambios.
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {
                 // Esto captura errores si la BDD tiene restricciones que EF Core no pudo resolver.
-                // Por ejemplo, si el recurso está referenciado por otra tabla que no tiene Cascade Delete.
                 ModelState.AddModelError(string.Empty, "Error al eliminar el recurso. Verifique que no esté referenciado en otras tablas.");
 
                 // Carga los detalles para volver a mostrar la vista Delete con el mensaje de error.
@@ -481,7 +457,7 @@ namespace BibliotecaMetrópolis.Controllers
                 return View("Delete", recursoFallido);
             }
 
-            // 4. Redirigimos al listado principal.
+            //Redirigimos al listado principal.
             return RedirectToAction(nameof(Index));
         }
 

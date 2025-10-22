@@ -14,8 +14,6 @@ namespace BibliotecaMetrópolis.Models
         [StringLength(100)]
         public string Nombre { get; set; } = null!;
 
-        // --- Propiedad de Navegación M:N ---
-
         // Esta colección une PalabraClave con Recurso a través de la entidad RecursoPalabraClave.
         // Es una forma eficiente y relacional de manejar el etiquetado.
         [InverseProperty("IdPalabraClaveNavigation")]

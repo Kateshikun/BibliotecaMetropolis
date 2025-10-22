@@ -1,7 +1,7 @@
 /* Integrantes 
 Daniel Adrian Castillo Garcia CG250400
 Rudy Mauricio Gonzales Pineda GP250120
-Francisco
+Francisco 
 Anderson 
 Nahum
  */

@@ -4,20 +4,16 @@ using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectListItem (los 
 
 namespace BibliotecaMetrópolis.ViewModels
 {
-    // Esta clase representa TODO lo que necesitamos para CREAR o EDITAR un recurso.
+    // Esta clase representa TODO lo que necesitamos para CREAR o EDITAR un recurso :0
     public class RecursoViewModel
     {
-        // -----------------------------------------------------------
-        // 1. Clave Primaria (NECESARIA SOLO PARA LA EDICIÓN - EDIT POST)
-        // -----------------------------------------------------------
+        // Clave Primaria (NECESARIA SOLO PARA LA EDICIÓN - EDIT POST)
         
         // Es crucial para el EDIT POST saber qué registro actualizar.
         // Lo mapearemos a un campo oculto en la vista.
         public int IdRecurso { get; set; }
 
-        // -----------------------------------------------------------
-        // 2. CAMPOS DIRECTOS DEL RECURSO (Entradas de Usuario)
-        // -----------------------------------------------------------
+        // CAMPOS DIRECTOS DEL RECURSO (Entradas de Usuario)
         
         [Required(ErrorMessage = "El Título es obligatorio y no puede ir vacío.")]
         [StringLength(200, ErrorMessage = "El título no debe superar los 200 caracteres.")]
@@ -35,12 +31,6 @@ namespace BibliotecaMetrópolis.ViewModels
         [Display(Name = "Cantidad en Inventario")]
         [Range(1, 1000, ErrorMessage = "La cantidad debe ser mayor a cero.")]
         public int? Cantidad { get; set; }
-        
-        // ... (Agrega cualquier otro campo básico de la tabla Recurso, como Precio, Descripción, etc.)
-
-        // -----------------------------------------------------------
-        // 3. CLAVES FORÁNEAS (FKs) SIMPLES
-        // -----------------------------------------------------------
 
         [Required(ErrorMessage = "Debe seleccionar un Tipo de Recurso.")]
         [Display(Name = "Tipo de Material")]
@@ -50,13 +40,9 @@ namespace BibliotecaMetrópolis.ViewModels
         [Display(Name = "Casa Editorial")]
         public int IdEditorial { get; set; }
         
-        // El país puede ser opcional (int?) si así lo definiste en tu BDD.
         [Display(Name = "País de Publicación")]
         public int? IdPais { get; set; }
 
-        // -----------------------------------------------------------
-        // 4. DATOS PARA RELACIONES M:N (AUTORES - Condición A)
-        // -----------------------------------------------------------
         
         [Required(ErrorMessage = "Debe seleccionar OBLIGATORIAMENTE un Autor Principal.")]
         [Display(Name = "Autor Principal (Condición A)")]
@@ -67,10 +53,6 @@ namespace BibliotecaMetrópolis.ViewModels
         // List<int> recibe los IDs seleccionados de un <select multiple>.
         public List<int>? IdsOtrosAutores { get; set; } 
 
-        // -----------------------------------------------------------
-        // 5. DATOS PARA RELACIONES M:N (PALABRAS CLAVE - Condición D)
-        // -----------------------------------------------------------
-
         [Display(Name = "Palabras Clave (Separadas por coma o punto y coma)")]
         [StringLength(500, ErrorMessage = "El texto de búsqueda no debe superar los 500 caracteres.")]
         // Este campo recoge todo el texto plano que luego se procesa en el Controlador POST.
@@ -79,9 +61,7 @@ namespace BibliotecaMetrópolis.ViewModels
         public string? UrlInstitusion { get; set; }
         public string? ContactoInstitucion { get; set; }
 
-        // -----------------------------------------------------------
-        // 6. COLECCIONES DE SOPORTE PARA LAS VISTAS (Dropdowns)
-        // -----------------------------------------------------------
+        // COLECCIONES DE SOPORTE PARA LAS VISTAS (Dropdowns)
 
         // Estas colecciones NO se mapean a la BDD; solo sirven para llenar las etiquetas <option> de los <select>.
         public IEnumerable<SelectListItem>? TiposRecurso { get; set; }

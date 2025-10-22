@@ -7,8 +7,6 @@ namespace BibliotecaMetrópolis.Models
     [Table("TipoRecurso")]
     public partial class TipoRecurso
     {
-        // La clave primaria tiene un nombre diferente a la convención (idTipoR vs IdTipoRecurso),
-        // pero EF Core lo maneja bien si el mapeo en Recurso.cs es correcto.
         [Key]
         public int idTipoR { get; set; }
 
@@ -19,7 +17,6 @@ namespace BibliotecaMetrópolis.Models
         [StringLength(255)]
         public string? descripcion { get; set; }
 
-        // --- Propiedad de Navegación 1:N ---
 
         // Un TipoRecurso puede clasificar a muchos Recursos.
         [InverseProperty("IdTipoRNavigation")]
