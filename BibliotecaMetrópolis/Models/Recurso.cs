@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlibliotecaWeb.Models;
+namespace BibliotecaMetrópolis.Models;
 
 [Table("Recurso")]
 public partial class Recurso
@@ -45,9 +45,9 @@ public partial class Recurso
 
     [ForeignKey("IdRecurso")]
     [InverseProperty("IdRecursos")]
-    public virtual ICollection<Autor> IdAutors { get; set; } = new List<Autor>();
+    public virtual IEnumerable<Autor>? IdAutors { get; set; } = new List<Autor>();
 
     [ForeignKey("IdRecurso")]
     [InverseProperty("IdRecursos")]
-    public virtual ICollection<PalabraClave> IdPalabraClaves { get; set; } = new List<PalabraClave>();
+    public virtual IEnumerable<PalabraClave>? IdPalabraClaves { get; set; }
 }

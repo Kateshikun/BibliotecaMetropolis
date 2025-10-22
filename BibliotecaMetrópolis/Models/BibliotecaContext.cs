@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlibliotecaWeb.Models;
+namespace BibliotecaMetrópolis.Models;
 
 public partial class BibliotecaContext : DbContext
 {
@@ -10,12 +10,13 @@ public partial class BibliotecaContext : DbContext
     {
     }
 
-    public BibliotecaContext(DbContextOptions<BibliotecaContext> options)
+    public BibliotecaContext(DbContextOptions<BibliotecaContext> options) //Inyeccion De Dependencias
         : base(options)
     {
     }
 
-    public virtual DbSet<Autor> Autors { get; set; }
+    //Agregar un DbSet por cada tabla de la base de datos para que EF Core pueda mapearlas
+    public virtual DbSet<Autor> Autors { get; set; } 
 
     public virtual DbSet<Editorial> Editorials { get; set; }
 
@@ -27,10 +28,11 @@ public partial class BibliotecaContext : DbContext
 
     public virtual DbSet<TipoRecurso> TipoRecursos { get; set; }
 
+    // Configurar la cadena de conexión a la base de datos SQL Server
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=ANDERSON\\SQLEXPRESS01;Database=BibliotecaMetropolis;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
 
+    // Metodo que sirve para configurar las entidades y sus relaciones de forma mas especifica
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Autor>(entity =>

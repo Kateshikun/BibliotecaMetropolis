@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlibliotecaWeb.Models;
+namespace BibliotecaMetrópolis.Models;
 
 [Table("TipoRecurso")]
 public partial class TipoRecurso
