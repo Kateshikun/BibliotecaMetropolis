@@ -45,7 +45,7 @@ namespace BibliotecaMetrópolis.ViewModels
 
         
         [Required(ErrorMessage = "Debe seleccionar OBLIGATORIAMENTE un Autor Principal.")]
-        [Display(Name = "Autor Principal (Condición A)")]
+        [Display(Name = "Autor Principal")]
         // Este ID se usará para marcar EsPrincipal = true en la tabla RecursoAutor.
         public int IdAutorPrincipal { get; set; }
 
