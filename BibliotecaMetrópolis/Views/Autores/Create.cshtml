@@ -1,0 +1,26 @@
+﻿@model BibliotecaMetrópolis.Models.Autor
+
+<h2>Agregar Autor</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="nombres" class="control-label"></label>   @* Etiqueta para el campo 'nombres' *@
+        <input asp-for="nombres" class="form-control" /> @* Campo de entrada para el nombre del autor *@
+        <span asp-validation-for="nombres" class="text-danger"></span> @* Mensaje de validación si hay errores en 'nombres' *@
+    </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="apellidos" class="control-label"></label> @* Etiqueta para el campo 'apellidos' *@
+        <input asp-for="apellidos" class="form-control" /> @* Campo de entrada para el apellido del autor *@
+        <span asp-validation-for="apellidos" class="text-danger"></span>@* Mensaje de validación si hay errores en 'apellidos' *@
+    </div>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar</button> @* Botón para enviar el formulario y guardar el autor *@
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a> @* Enlace para volver a la lista de autores sin guardar *@
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial"); @* Sección que incluye los scripts de validación del lado del cliente *@
+    }
+}

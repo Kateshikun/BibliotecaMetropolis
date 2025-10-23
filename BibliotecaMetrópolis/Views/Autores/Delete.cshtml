@@ -1,0 +1,15 @@
+﻿@model BibliotecaMetrópolis.Models.Autor
+
+<h2>Eliminar Autor</h2> @* Título de la vista *@
+
+<h4>¿Estás seguro que deseas eliminar este autor?</h4> @* Mensaje de confirmación para el usuario *@
+<div>
+    <strong>Nombre:</strong> @Model.nombres<br />  @* Muestra el nombre del autor que se va a eliminar *@
+    <strong>Apellido:</strong> @Model.apellidos  @* Muestra el apellido del autor *@
+</div>
+
+<form asp-action="DeleteConfirmed"> @* Formulario que envía la confirmación al método DeleteConfirmed del controlador *@
+    <input type="hidden" asp-for="IdAutor" /> @* Campo oculto que mantiene el ID del autor a eliminar *@
+    <button type="submit" class="btn btn-danger">Eliminar</button> @* Botón para confirmar y ejecutar la eliminación *@
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a> @* Botón para confirmar y ejecutar la eliminación *@
+</form>

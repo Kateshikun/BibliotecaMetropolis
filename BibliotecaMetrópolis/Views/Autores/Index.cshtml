@@ -1,0 +1,40 @@
+﻿@* Modelo que se recibe en la vista: una lista de autores *@
+@model IEnumerable<BibliotecaMetrópolis.Models.Autor>
+
+@* Título principal de la página *@
+<h2>Lista de Autores</h2>
+
+@* Botón que redirige a la acción Create para agregar un nuevo autor *@
+<a asp-action="Create" class="btn btn-primary">Agregar Autor</a>
+
+@* Tabla que muestra los datos de cada autor *@
+<table class="table mt-3">
+    <thead>
+        <tr>
+            @* Encabezados de las columnas *@
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Itera sobre cada autor en el modelo recibido *@
+        @foreach (var autor in Model)
+        {
+            <tr>
+                @* Muestra el nombre del autor *@
+                <td>@autor.nombres</td>
+
+                @* Muestra el apellido del autor *@
+                <td>@autor.apellidos</td>
+
+                @* Enlaces para editar, ver detalles o eliminar el autor *@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@autor.IdAutor">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@autor.IdAutor">Detalles</a> |
+                    <a asp-action="Delete" asp-route-id="@autor.IdAutor">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

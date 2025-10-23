@@ -1,9 +1,9 @@
 /* Integrantes 
 Daniel Adrian Castillo Garcia CG250400
 Rudy Mauricio Gonzales Pineda GP250120
-Francisco 
-Anderson 
-Nahum
+Francisco Josue Santos Lopez SL251022
+Anderson Rubén Portillo Alfaro PA250105
+Nahum de Jesús Flores Girón FG250084
  */
 
 using Microsoft.EntityFrameworkCore;

@@ -1,0 +1,15 @@
+﻿@model BibliotecaMetrópolis.Models.Autor
+
+@* Se recibe un objeto Autor para mostrar sus datos detallados *@
+
+<h2>Detalles del Autor</h2> @* Título de la vista *@
+
+<div>
+    <strong>ID:</strong> @Model.IdAutor<br /> @* Muestra el ID del autor (clave primaria) *@
+    <strong>Nombre:</strong> @Model.nombres<br />@* Muestra el nombre del autor *@
+    <strong>Apellido:</strong> @Model.apellidos @* Muestra el apellido del autor *@
+</div>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.IdAutor" class="btn btn-primary">Editar</a>  @* Enlace para ir a la vista de edición del autor *@
+<a asp-action="Index" class="btn btn-secondary">Volver</a>  @* Enlace para regresar a la lista de autores *@
