@@ -1,0 +1,69 @@
+﻿@model BibliotecaMetrópolis.ViewModels.BusquedaViewModel
+
+@{
+    ViewData["Title"] = "Búsqueda de Recursos";
+}
+
+<div class="container mt-4">
+    <h2>🔍 Búsqueda Avanzada de Recursos</h2>
+    <p class="text-muted">Utilice al menos 1 de los siguientes campos para buscar recursos</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Resultados" method="post">
+                <div class="row">
+                    <!-- Campo 1: Autor -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Autor" class="form-label"></label>
+                        <input asp-for="Autor" class="form-control" placeholder="Ej: Miguel, García, etc." />
+                        <span asp-validation-for="Autor" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo 2: Palabra Clave -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="PalabraClave" class="form-label"></label>
+                        <input asp-for="PalabraClave" class="form-control" placeholder="Ej: programación, historia, etc." />
+                        <span asp-validation-for="PalabraClave" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo 3: Editorial -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="IdEditorial" class="form-label"></label>
+                        <select asp-for="IdEditorial" asp-items="Model.Editoriales" class="form-select">
+                            <option value="">-- Seleccione Editorial --</option>
+                        </select>
+                    </div>
+
+                    <!-- Campo 4: Tipo de Recurso -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="IdTipoRecurso" class="form-label"></label>
+                        <select asp-for="IdTipoRecurso" asp-items="Model.TiposRecurso" class="form-select">
+                            <option value="">-- Seleccione Tipo --</option>
+                        </select>
+                    </div>
+
+                    <!-- Campo Opcional: Año -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AnioPublicacion" class="form-label"></label>
+                        <select asp-for="AnioPublicacion" asp-items="Model.Anios" class="form-select">
+                            <option value="">-- Seleccione Año --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar Recursos
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

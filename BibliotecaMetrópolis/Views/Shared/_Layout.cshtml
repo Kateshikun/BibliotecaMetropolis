@@ -4,15 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BibliotecaMetrópolis</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> <!--Asi es, se ocuparon Bootstraps para no complicarse con el css-->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BibliotecaMetrópolis.styles.css" asp-append-version="true" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BibliotecaMetrópolis</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-book-half"></i> BibliotecaMetrópolis
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,16 +24,29 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Adquisicion" asp-action="Index">Gestion de Adquisiciones</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house"></i> Inicio
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Busqueda entre Campos</a>
+                            <a class="nav-link text-dark" asp-controller="Adquisicion" asp-action="Index">
+                                <i class="bi bi-journal-plus"></i> Gestión de Adquisiciones
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Busqueda entre Tipo</a>
+                            <a class="nav-link text-dark" asp-controller="Busqueda" asp-action="Index">
+                                <i class="bi bi-search"></i> Búsqueda entre Campos
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Lista de Autores</a>
+                            <a class="nav-link text-dark" asp-controller="Recursos" asp-action="ListarPorTipo">
+                                <i class="bi bi-filter"></i> Búsqueda por Tipo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Autores" asp-action="Index">
+                                <i class="bi bi-people"></i> Lista de Autores
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -44,7 +61,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-           <p>2025 - Hecho por: Adrian, Rudy, Anderson, Nahum y Francisco </p>
+            <p>&copy; 2025 - Hecho por: Adrian, Rudy, Anderson, Nahum y Francisco</p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

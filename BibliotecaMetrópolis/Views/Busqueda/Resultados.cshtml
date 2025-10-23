@@ -1,0 +1,64 @@
+﻿@model BibliotecaMetrópolis.ViewModels.ResultadosBusquedaViewModel
+
+@{
+    ViewData["Title"] = "Resultados de Búsqueda";
+}
+
+<div class="container mt-4">
+    <h2>📚 Resultados de Búsqueda</h2>
+
+    <div class="alert alert-info">
+        <strong>@Model.TotalResultados</strong> recursos encontrados
+        @if (!string.IsNullOrEmpty(Model.TerminosBusqueda.Autor))
+        {
+            <br />
+        
+            <small>Autor: @Model.TerminosBusqueda.Autor</small>
+        }
+        @if (!string.IsNullOrEmpty(Model.TerminosBusqueda.PalabraClave))
+        {
+            <br />
+        
+            <small>Palabra clave: @Model.TerminosBusqueda.PalabraClave</small>
+        }
+    </div>
+
+    @if (Model.Resultados.Any())
+    {
+        <div class="row">
+            @foreach (var recurso in Model.Resultados)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@recurso.titulo</h5>
+                            <p class="card-text">
+                                <strong>Tipo:</strong> @recurso.IdTipoRNavigation?.nombre<br />
+                                <strong>Editorial:</strong> @recurso.IdEditNavigation?.Nombre<br />
+                                <strong>Año:</strong> @recurso.annopublic<br />
+                                <strong>Autores:</strong>
+                                @string.Join(", ", recurso.RecursoAutor.Select(ra =>
+                                $"{ra.IdAutorNavigation.nombres} {ra.IdAutorNavigation.apellidos}"))
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a asp-controller="Adquisicion" asp-action="Details" asp-route-id="@recurso.IdRecurso"
+                       class="btn btn-sm btn-outline-primary">Ver Detalles</a>
+                </div>
+            </div>
+        </div>
+                }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4>No se encontraron recursos</h4>
+            <p>Intente modificar los términos de búsqueda o utilizar menos filtros.</p>
+        </div>
+    }
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Nueva Búsqueda</a>
+    </div>
+</div>
