@@ -103,57 +103,60 @@ namespace BibliotecaMetrópolis.Controllers
         [ValidateAntiForgeryToken] // Buena práctica de seguridad. Sirve para evitar ataques CSRF, osea peticiones maliciosas.
         public async Task<IActionResult> Create(RecursoViewModel viewModel)
         {
-            // 1. Validamos que los campos obligatorios del formulario se hayan llenado.
             if (!ModelState.IsValid)
             {
-                // Si falla la validación, volvemos a cargar las listas para que el formulario se vea bien.
                 return View(CargarDatosApoyo(viewModel));
             }
 
-            if (viewModel.IdTipoRecurso == 3 && viewModel.IdEditorial != 0) //Por si la persona elige TESIS y una editorial (Cosa que no se puede hacer)
+            if (viewModel.IdTipoRecurso == 3)
             {
-                    ModelState.AddModelError("IdEditorial",
-                    $"No esta permitido asociar la tesis con editorial. Para tesis solo se registra información de la Institución educativa.");
-                viewModel.IdEditorial = 0;
-                if (string.IsNullOrWhiteSpace(viewModel.UrlInstitusion))
-                    return View(CargarDatosApoyo(viewModel));
+                if (viewModel.IdEditorial != 0)
                 {
+                    ModelState.AddModelError("IdEditorial",
+                        $"No está permitido asociar la tesis con editorial. Para tesis solo se registra información de la Institución educativa.");
+                    viewModel.IdEditorial = 0;
+                    return View(CargarDatosApoyo(viewModel));
                 }
 
+                if (string.IsNullOrWhiteSpace(viewModel.UrlInstitusion))
+                {
+                    ModelState.AddModelError("UrlInstitusion", "La URL del Website de la Institución es requerida para Tesis.");
+                    return View(CargarDatosApoyo(viewModel));
+                }
 
-                // El nombre de la editorial ahora es el nombre de la Institución
-                var nombreInstitucion = _context.Editorial
-                                                .Where(e => e.IdEdit == viewModel.IdEditorial)
-                                                .Select(e => e.Nombre)
-                                                .FirstOrDefault() ?? "Seleccionada";
-                
+                var nombreInstitucion = viewModel.UrlInstitusion.Trim();
 
-                // Definimos la descripción con la información de contacto y URL.
-                var descripcionInstitucion = $"URL: {viewModel.UrlInstitusion ?? "N/A"} | Contacto: {viewModel.ContactoInstitucion ?? "N/A"}";
+                var descripcionInstitucion = $"URL: {nombreInstitucion} | Contacto: {viewModel.ContactoInstitucion?.Trim() ?? "N/A"}";
 
-                // Buscamos si ya existe una editorial con esa URL (una búsqueda simple).
                 var institucionExistente = await _context.Editorial
-                    .FirstOrDefaultAsync(e => e.descripcion != null && e.descripcion.Contains(viewModel.UrlInstitusion!));
+                    .FirstOrDefaultAsync(e => e.descripcion != null && e.descripcion.Contains(nombreInstitucion));
 
                 if (institucionExistente != null)
                 {
-                    // Reutilizar: Asignamos el ID existente.
                     viewModel.IdEditorial = institucionExistente.IdEdit;
                 }
                 else
                 {
-                    // Crear nueva Editorial (Institución) si no existe.
                     var nuevaInstitucion = new Editorial
                     {
-                        Nombre = nombreInstitucion ?? "Institución Desconocida", // Usar el nombre que ya eligió en el dropdown, si existe.
+                        Nombre = nombreInstitucion,
                         descripcion = descripcionInstitucion
                     };
                     _context.Editorial.Add(nuevaInstitucion);
-                    await _context.SaveChangesAsync(); // Guardamos para obtener el nuevo IdEdit
 
-                    viewModel.IdEditorial = nuevaInstitucion.IdEdit;
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                        viewModel.IdEditorial = nuevaInstitucion.IdEdit;
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError(string.Empty, "Error al crear la Institución educativa. Detalle: " + ex.Message);
+                        return View(CargarDatosApoyo(viewModel));
+                    }
                 }
             }
+
             var nuevoRecurso = new Recurso
             {
                 titulo = viewModel.Titulo,
@@ -165,9 +168,8 @@ namespace BibliotecaMetrópolis.Controllers
                 RecursoPalabraClave = new List<RecursoPalabraClave>()
             };
 
-            _context.Recurso.Add(nuevoRecurso); //Lo agregamos al contexto, pero aún no se guarda en la BDD.
+            _context.Recurso.Add(nuevoRecurso);
 
-            // Guardamos para obtener el ID de IDENTITY de la BDD
             try
             {
                 await _context.SaveChangesAsync();
@@ -180,19 +182,15 @@ namespace BibliotecaMetrópolis.Controllers
 
             var nuevoRecursoId = nuevoRecurso.IdRecurso;
 
-            // Procesar Autores
             var idsAutores = new List<int> { viewModel.IdAutorPrincipal };
             if (viewModel.IdsOtrosAutores != null)
             {
-                // Juntamos los IDs, asegurándonos de que el principal no esté duplicado.
                 idsAutores.AddRange(viewModel.IdsOtrosAutores.Where(a => a != viewModel.IdAutorPrincipal).Distinct());
             }
 
             foreach (var autorId in idsAutores)
             {
                 var esPrincipal = autorId == viewModel.IdAutorPrincipal;
-
-                // Creamos la relación de unión y definimos si es principal.
                 nuevoRecurso.RecursoAutor.Add(new RecursoAutor
                 {
                     IdRecurso = nuevoRecursoId,
@@ -201,27 +199,23 @@ namespace BibliotecaMetrópolis.Controllers
                 });
             }
 
-            //Procesar Palabras Clave. Se separan por comas o punto y coma.
             var palabrasTexto = viewModel.PalabrasClaveTexto?
-                                        .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(p => p.Trim())
-                                        .Where(p => !string.IsNullOrWhiteSpace(p))
-                                        .ToList() ?? new List<string>();
+                                         .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(p => p.Trim())
+                                         .Where(p => !string.IsNullOrWhiteSpace(p))
+                                         .ToList() ?? new List<string>();
 
             foreach (var palabra in palabrasTexto)
             {
-                // Buscamos si la palabra clave ya existe (ignorando mayúsculas/minúsculas).
                 var palabraClave = await _context.PalabraClave
                     .FirstOrDefaultAsync(p => p.Nombre.ToUpper() == palabra.ToUpper());
 
                 if (palabraClave == null)
                 {
-                    // Si no existe, la creamos. EF se encargará de insertarla.
                     palabraClave = new PalabraClave { Nombre = palabra };
                     _context.PalabraClave.Add(palabraClave);
                 }
 
-                // Creamos la relación M:N.
                 nuevoRecurso.RecursoPalabraClave.Add(new RecursoPalabraClave
                 {
                     IdRecurso = nuevoRecursoId,
@@ -231,10 +225,8 @@ namespace BibliotecaMetrópolis.Controllers
 
             try
             {
-                // egundo guardado: Guarda todas las relaciones M:N y las nuevas Palabras Clave.
                 await _context.SaveChangesAsync();
 
-                // Si todo esta bien: Volvemos al listado principal.
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
